@@ -1,0 +1,1 @@
+{"name":"queuepilot-api","private":true,"scripts":{"dev":"tsx watch src/server.ts","build":"tsc","start":"node dist/server.js","test":"vitest run","lint":"eslint ."},"dependencies":{"fastify":"^5.0.0","zod":"^3.23.8"},"devDependencies":{"@types/node":"^22.0.0","eslint":"^9.0.0","tsx":"^4.19.0","typescript":"^5.6.0","vitest":"^2.1.0"}}
