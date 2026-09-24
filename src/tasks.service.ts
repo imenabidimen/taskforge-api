@@ -1,7 +1,31 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-@Injectable() export class TasksService {
-  private tasks: {id:string;ownerId:string;title:string;completed:boolean}[]=[];
-  create(ownerId:string,title:string){const task={id:crypto.randomUUID(),ownerId,title,completed:false};this.tasks.push(task);return task;}
-  findMine(ownerId:string){return this.tasks.filter(t=>t.ownerId===ownerId);}
-  complete(ownerId:string,id:string){const t=this.tasks.find(x=>x.id===id&&x.ownerId===ownerId);if(!t)throw new NotFoundException('Task not found');t.completed=true;return t;}
+import { PrismaService } from './prisma.service';
+
+@Injectable()
+export class TasksService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  create(ownerId: string, title: string) {
+    return this.prisma.task.create({
+      data: { ownerId, title },
+    });
+  }
+
+  findMine(ownerId: string) {
+    return this.prisma.task.findMany({
+      where: { ownerId },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async complete(ownerId: string, id: string) {
+    const result = await this.prisma.task.updateMany({
+      where: { id, ownerId },
+      data: { completed: true },
+    });
+
+    if (result.count === 0) throw new NotFoundException('Task not found');
+
+    return this.prisma.task.findUniqueOrThrow({ where: { id } });
+  }
 }
