@@ -1,0 +1,2 @@
+import { TasksService } from '../src/tasks.service';
+describe('TasksService',()=>{it('creates, lists and completes only owned tasks',()=>{const s=new TasksService();const task=s.create('u1','Ship release');expect(s.findMine('u1')).toHaveLength(1);expect(s.findMine('u2')).toHaveLength(0);expect(s.complete('u1',task.id).completed).toBe(true);});});
