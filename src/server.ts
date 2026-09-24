@@ -1,0 +1,10 @@
+import Fastify from "fastify";
+import { z } from "zod";
+const app = Fastify({ logger: true });
+const jobs = new Map<string, { id: string; title: string; status: "queued"|"running"|"done" }>();
+const input = z.object({ title: z.string().trim().min(3).max(120) });
+app.get("/health", async () => ({ status: "ok" }));
+app.get("/jobs", async () => [...jobs.values()]);
+app.post("/jobs", async (request, reply) => { const parsed=input.safeParse(request.body); if(!parsed.success)return reply.code(400).send({error:"invalid_request"}); const job={id:crypto.randomUUID(),title:parsed.data.title,status:"queued" as const}; jobs.set(job.id,job); return reply.code(201).send(job); });
+export { app };
+if (import.meta.url === `file://${process.argv[1]}`) app.listen({port:Number(process.env.PORT??3000),host:"0.0.0.0"});
