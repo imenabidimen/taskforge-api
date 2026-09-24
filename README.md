@@ -1,23 +1,25 @@
-# QueuePilot API
+# TaskForge API — NestJS
 
-A small, production-shaped task and job management API built for a four-year software engineer portfolio.
+A realistic team task-management API built as a portfolio project for a full-stack engineer.
 
-## What it demonstrates
-- TypeScript + Fastify REST API
-- PostgreSQL persistence with Prisma
-- JWT authentication and role-aware authorization
-- Idempotent job creation and optimistic status transitions
-- Input validation, structured errors, logging and health checks
-- Unit and integration tests
-- Docker Compose for local development
-- GitHub Actions CI
+**Stack:** NestJS, TypeScript, JWT, bcrypt, class-validator, Jest, Docker-ready configuration.
 
-## Local setup
+### Features
+- Register/login with bcrypt password hashing
+- JWT access-token authentication
+- User roles (USER/ADMIN) in the auth model
+- Protected task workflow with ownership checks
+- Validation and consistent HTTP errors
+- Health-ready application structure
+- Unit tests
+- Environment configuration
 
-1. Copy `.env.example` to `.env`.
-2. Start PostgreSQL with `docker compose up -d db`.
-3. Run `npm ci` and `npx prisma migrate dev`.
-4. Start with `npm run dev`.
-5. Run `npm test` for the test suite.
+### Run
+```bash
+npm install
+cp .env.example .env
+npm run start:dev
+npm test
+```
 
-The API is intentionally straightforward: the code favors boring, readable boundaries over framework magic.
+The persistence layer is intentionally kept small so the domain is easy to review; the service boundaries are ready to be swapped for PostgreSQL/Prisma without changing controllers.
