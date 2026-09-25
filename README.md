@@ -9,14 +9,14 @@ A small but realistic task-management API built with NestJS, Prisma, and Postgre
 - JWT authentication and bcrypt password hashing
 - DTO validation and per-user task ownership
 - Unit tests around authentication and authorization boundaries
-- Docker Compose for local PostgreSQL and Redis
+- Docker Compose for local PostgreSQL
 - CI type-checking, testing, and production build
 
 ## Architecture
 
 HTTP request -> Controller -> Guard -> Service -> Prisma -> PostgreSQL
 
-Authentication and task services own business rules; Prisma is the persistence boundary. The frontend projects consume the API through its /api contract.
+Authentication and task services own business rules; Prisma is the persistence boundary. The frontend projects consume the API through its `/api` contract. Swagger is available at `/docs` while the API is running.
 
 ## Run locally
 
