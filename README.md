@@ -1,70 +1,55 @@
 # TaskForge API
 
-A focused task-management API built with NestJS, Prisma, and PostgreSQL. The service is deliberately small so the important backend decisions are easy to review.
+A small task-management API built with NestJS, Prisma and PostgreSQL.
 
-## What it demonstrates
+I use it as the backend for two frontend applications: WorkBoard (Vue) and ClientHub (React). The API stays focused on authentication, validation, ownership and persistence.
 
-- NestJS + TypeScript REST API
-- PostgreSQL persistence through Prisma migrations
-- JWT authentication and bcrypt password hashing
-- DTO validation and server-side task ownership
-- Swagger/OpenAPI documentation at `/docs`
-- Unit and integration-oriented tests
-- Docker Compose for local PostgreSQL
-- GitHub Actions for type-checking, tests, migrations, and production build
+## Stack
 
-## Architecture
-
-```
-HTTP
-  ↓
-Controller → Guard → Service → Prisma → PostgreSQL
-              ↓
-             JWT
-```
-
-The API is consumed by the Vue **WorkBoard** and React **ClientHub** portfolio clients.
-
-## Run locally
-
-1. Start PostgreSQL:
-   ```bash
-   docker compose up -d postgres
-   ```
-2. Create your environment file:
-   ```bash
-   cp .env.example .env
-   ```
-3. Install dependencies:
-   ```bash
-   npm install
-   ```
-4. Generate the Prisma client and apply the migration:
-   ```bash
-   npm run prisma:generate
-   npx prisma migrate deploy
-   ```
-5. Start the API:
-   ```bash
-   npm run start:dev
-   ```
-
-Swagger: `http://localhost:3000/docs`
-
-## Runtime screenshot
-
-This screenshot is captured from the **running NestJS API in GitHub Actions**. The workflow starts PostgreSQL, applies the Prisma migration, starts the API, opens the real Swagger UI in Chromium with Playwright, and stores the capture as a CI artifact.
-
-![TaskForge Swagger API](docs/screenshots/swagger-api.png)
+- NestJS + TypeScript
+- PostgreSQL + Prisma
+- JWT authentication
+- bcrypt password hashing
+- class-validator
+- Swagger/OpenAPI
+- Jest
+- Docker Compose
+- GitHub Actions
 
 ## API
 
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `GET /api/tasks`
-- `POST /api/tasks`
-- `POST /api/tasks/:id/complete`
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| POST | `/api/auth/register` | Create an account |
+| POST | `/api/auth/login` | Sign in |
+| GET | `/api/tasks` | Get the signed-in user's tasks |
+| POST | `/api/tasks` | Create a task |
+| POST | `/api/tasks/:id/complete` | Complete a task |
 
-## Scope
+Tasks are scoped to the authenticated user on the server.
 
-This is intentionally a focused portfolio service rather than a pretend enterprise platform. The important part is that authentication, ownership, validation, persistence, tests, and local infrastructure are real and reviewable.
+## Run locally
+
+```bash
+docker compose up -d postgres
+cp .env.example .env
+npm install
+npm run prisma:generate
+npx prisma migrate deploy
+npm run start:dev
+```
+
+Swagger: `http://localhost:3000/docs`
+
+## Project structure
+
+```
+src/
+  auth/        authentication and JWT handling
+  tasks/       task endpoints and business logic
+  prisma/      database access
+```
+
+CI runs the tests, type-check, Prisma migration and production build. It also starts the API and captures the Swagger page with Playwright.
+
+![TaskForge Swagger API](docs/screenshots/swagger-api.png)
