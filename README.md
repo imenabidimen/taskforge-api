@@ -51,6 +51,12 @@ The API is consumed by the Vue **WorkBoard** and React **ClientHub** portfolio c
 
 Swagger: `http://localhost:3000/docs`
 
+## Runtime screenshot
+
+This screenshot is captured from the **running NestJS API in GitHub Actions**. The workflow starts PostgreSQL, applies the Prisma migration, starts the API, opens the real Swagger UI in Chromium with Playwright, and stores the capture as a CI artifact.
+
+![TaskForge Swagger API](docs/screenshots/swagger-api.png)
+
 ## API
 
 - `POST /api/auth/register`
