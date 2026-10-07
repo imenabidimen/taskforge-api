@@ -38,7 +38,7 @@ describe('TasksService', () => {
     expect((await s.complete('u1', task.id)).completed).toBe(true);
   });
 
-  it('prevents one user from completing another user's task', async () => {
+  it("prevents one user from completing another user's task", async () => {
     const s = service();
     const task = await s.create('u1', 'Private task');
     await expect(s.complete('u2', task.id)).rejects.toBeInstanceOf(NotFoundException);
