@@ -87,7 +87,7 @@ jobs:
             waitUntil: 'networkidle'
           });
 
-          await page.locator('.swagger-ui').waitFor({ state: 'visible' });
+          await page.locator('.swagger-ui').first().waitFor({ state: 'visible' });
           await page.screenshot({
             path: 'docs/screenshots/swagger-api.png',
             fullPage: true
