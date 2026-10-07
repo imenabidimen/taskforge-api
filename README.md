@@ -26,7 +26,7 @@ I use it as the backend for two frontend applications: WorkBoard (Vue) and Clien
 | POST | `/api/tasks` | Create a task |
 | POST | `/api/tasks/:id/complete` | Complete a task |
 
-Tasks are scoped to the authenticated user on the server.
+Tasks are scoped to the authenticated user on the server. The user ID comes from the JWT rather than from a client-supplied ID, so one account cannot read or modify another account's tasks.
 
 ## Run locally
 
