@@ -3,6 +3,10 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+
+permissions:
+  contents: write
+
 jobs:
   build-test:
     runs-on: ubuntu-latest
@@ -23,14 +27,89 @@ jobs:
     env:
       DATABASE_URL: postgresql://taskforge:taskforge@localhost:5432/taskforge?schema=public
       JWT_SECRET: ci-test-secret
+      PORT: 3000
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm install
-      - run: npm run prisma:generate
-      - run: npx prisma migrate deploy
-      - run: npm run typecheck
-      - run: npm test
-      - run: npm run build
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+
+      - name: Apply database migrations
+        run: npx prisma migrate deploy
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Start API
+        run: |
+          nohup node dist/main.js > /tmp/taskforge-api.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/docs >/dev/null; then
+              echo "TaskForge API is ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/taskforge-api.log
+          exit 1
+
+      - name: Install Playwright
+        run: npm install -D playwright
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Capture real Swagger screenshot
+        run: |
+          mkdir -p docs/screenshots
+          cat > capture.mjs <<'EOF'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch();
+          const page = await browser.newPage({
+            viewport: { width: 1440, height: 1200 }
+          });
+
+          await page.goto('http://127.0.0.1:3000/docs', {
+            waitUntil: 'networkidle'
+          });
+
+          await page.locator('.swagger-ui').waitFor({ state: 'visible' });
+          await page.screenshot({
+            path: 'docs/screenshots/swagger-api.png',
+            fullPage: true
+          });
+
+          await browser.close();
+          EOF
+          node capture.mjs
+
+      - name: Commit real screenshot
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/screenshots/swagger-api.png
+          git diff --cached --quiet || git commit -m "docs: add real Swagger screenshot [skip ci]"
+          git push
+
+      - name: Upload screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: taskforge-real-screenshot
+          path: docs/screenshots/
+          retention-days: 30
