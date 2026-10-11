@@ -8,6 +8,8 @@ import { TasksService } from './tasks.service';
 import { AuthGuard } from './auth.guard';
 import { PrismaModule } from './prisma.module';
 import { HealthController } from './health.controller';
+import { RequestLoggingMiddleware } from './request-logging.middleware';
+import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 
 @Module({
   imports: [
@@ -19,6 +21,10 @@ import { HealthController } from './health.controller';
     }),
   ],
   controllers: [AuthController, TasksController, HealthController],
-  providers: [AuthService, TasksService, AuthGuard],
+  providers: [AuthService, TasksService, AuthGuard, RequestLoggingMiddleware],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestLoggingMiddleware).forRoutes('*');
+  }
+}
