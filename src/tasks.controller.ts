@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
-import { Transform } from 'class-transformer';
-import { IsString, MaxLength, MinLength } from 'class-validator';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Transform, Type } from 'class-transformer';
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 import { AuthGuard } from './auth.guard';
 import { TasksService } from './tasks.service';
 
@@ -12,14 +12,32 @@ class CreateTaskDto {
   title!: string;
 }
 
+class ListTasksQueryDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit = 20;
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  offset = 0;
+}
+
 @Controller('tasks')
 @UseGuards(AuthGuard)
 export class TasksController {
   constructor(private readonly tasks: TasksService) {}
 
   @Get()
-  list(@Req() req: { user: { sub: string } }) {
-    return this.tasks.findMine(req.user.sub);
+  list(
+    @Query() query: ListTasksQueryDto,
+    @Req() req: { user: { sub: string } },
+  ) {
+    return this.tasks.findMine(req.user.sub, query.limit, query.offset);
   }
 
   @Post()
