@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  passwordHash String
-  role         Role     @default(USER)
-  createdAt    DateTime @default(now())
-  tasks        Task[]
+  id               String            @id @default(uuid())
+  email            String            @unique
+  passwordHash     String
+  role             Role              @default(USER)
+  createdAt        DateTime          @default(now())
+  tasks            Task[]
+  productionOrders ProductionOrder[]
 }
 
 model Task {
@@ -28,7 +29,44 @@ model Task {
   @@index([ownerId, completed])
 }
 
+model ProductionOrder {
+  id             String                 @id @default(uuid())
+  orderNumber    String                 @unique
+  materialCode   String
+  plannedQuantity Int
+  status         ProductionOrderStatus  @default(CREATED)
+  version        Int                    @default(0)
+  createdById    String
+  createdBy      User                   @relation(fields: [createdById], references: [id])
+  events         ProductionOrderEvent[]
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  @@index([createdById, status, createdAt])
+}
+
+model ProductionOrderEvent {
+  id         String                @id @default(uuid())
+  orderId    String
+  order      ProductionOrder       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus ProductionOrderStatus?
+  toStatus   ProductionOrderStatus
+  actorId    String
+  reason     String?
+  createdAt  DateTime              @default(now())
+
+  @@index([orderId, createdAt])
+}
+
 enum Role {
   USER
   ADMIN
+}
+
+enum ProductionOrderStatus {
+  CREATED
+  RELEASED
+  RUNNING
+  COMPLETED
+  CANCELLED
 }
