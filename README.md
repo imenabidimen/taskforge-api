@@ -61,6 +61,7 @@ src/
   auth.service.ts     password verification and token creation
   auth.guard.ts       bearer-token verification
   health.controller.ts liveness and database readiness probes
+  request-logging.middleware.ts request IDs and structured HTTP logs
   tasks.controller.ts task routes and request validation
   tasks.service.ts    task queries and ownership checks
   prisma.module.ts    Prisma dependency registration
@@ -71,7 +72,7 @@ prisma/
 test/                 unit and integration tests
 ```
 
-CI runs type-checking, authentication and task-ownership tests, the Prisma migration and a production build. Authentication input tests cover email normalization and bcrypt’s byte-length limit. CI also captures the Swagger page in a browser and uploads the image as a workflow artifact.
+CI runs type-checking, authentication, task-ownership and request-logging tests, the Prisma migration and a production build. Authentication input tests cover email normalization and bcrypt’s byte-length limit. CI also captures the Swagger page in a browser and uploads the image as a workflow artifact.
 
 ![TaskForge Swagger API](docs/screenshots/swagger-api.png)
 
