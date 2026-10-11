@@ -9,7 +9,7 @@ import { AuthGuard } from './auth.guard';
 import { PrismaModule } from './prisma.module';
 import { HealthController } from './health.controller';
 import { RequestLoggingMiddleware } from './request-logging.middleware';
-import { MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
 
 @Module({
   imports: [
@@ -25,6 +25,6 @@ import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(RequestLoggingMiddleware).forRoutes('*');
+    consumer.apply(RequestLoggingMiddleware).forRoutes({ path: '{*path}', method: RequestMethod.ALL });
   }
 }
