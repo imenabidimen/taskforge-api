@@ -16,7 +16,7 @@ TaskForge is a small task API built with NestJS, Prisma and PostgreSQL. WorkBoar
 
 - NestJS and TypeScript
 - PostgreSQL with Prisma
-- JWT bearer authentication and bcrypt password hashing
+- JWT bearer authentication and bcrypt password hashing (passwords are validated against bcrypt’s 72-byte UTF-8 input limit)
 - class-validator / class-transformer request validation
 - Swagger/OpenAPI
 - Jest and GitHub Actions
@@ -70,6 +70,6 @@ prisma/
 test/                 unit and integration tests
 ```
 
-CI runs type-checking, tests, the Prisma migration and a production build. It also captures the Swagger page in a browser and uploads the image as a workflow artifact.
+CI runs type-checking, authentication and task-ownership tests, the Prisma migration and a production build. Authentication input tests cover email normalization and bcrypt’s byte-length limit. CI also captures the Swagger page in a browser and uploads the image as a workflow artifact.
 
 ![TaskForge Swagger API](docs/screenshots/swagger-api.png)
