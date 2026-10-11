@@ -71,3 +71,12 @@ test/                 unit and integration tests
 CI runs type-checking, authentication and task-ownership tests, the Prisma migration and a production build. Authentication input tests cover email normalization and bcrypt’s byte-length limit. CI also captures the Swagger page in a browser and uploads the image as a workflow artifact.
 
 ![TaskForge Swagger API](docs/screenshots/swagger-api.png)
+
+## Design decisions
+
+- **The API owns authorization.** Task queries use the authenticated user's ID from the verified token. The client cannot choose which user's tasks it reads or changes by sending an owner ID.
+- **Invalid input is rejected at the boundary.** Request DTO validation is kept close to the controllers so bad input does not become a database concern.
+- **Database changes are versioned.** Prisma migrations run in CI against PostgreSQL, rather than relying on a developer's local schema.
+- **The scope is intentionally small.** This repository demonstrates the API, authentication and persistence fundamentals; it is not presented as a production SaaS platform with a full roles/permissions model or deployment setup.
+
+The main thing to review here is the API contract and its tests, not the number of endpoints.
