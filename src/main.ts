@@ -4,6 +4,11 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret || Buffer.byteLength(jwtSecret, 'utf8') < 32) {
+    throw new Error('JWT_SECRET must be configured with at least 32 UTF-8 bytes.');
+  }
+
   const app = await NestFactory.create(AppModule);
   app.enableShutdownHooks();
 
