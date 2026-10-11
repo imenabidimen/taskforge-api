@@ -92,6 +92,8 @@ The repository includes short, explicit engineering documents:
 
 - [Architecture and current boundaries](docs/architecture.md) — request flow, data model, implemented controls, and known gaps.
 - [ADR 0001: modular monolith](docs/adr/0001-modular-monolith.md) — why this project does not split a small domain into microservices yet.
+- [ADR 0002: production-order state transitions](docs/adr/0002-production-order-state-transitions.md) — transaction and optimistic-concurrency trade-offs.
+- [Production-order workflow](docs/production-order-workflow.md) — state diagram, invariants, and example API requests.
 - [Operational runbook](docs/operations/runbook.md) — local startup and failure triage, with current operational limitations stated honestly.
 - [Evidence-driven roadmap](docs/roadmap.md) — acceptance criteria for observability, performance testing and future hardening.
 
