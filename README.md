@@ -10,8 +10,6 @@ TaskForge is the backend project in my full-stack portfolio. It exposes authenti
 - [Foody — earlier Angular/FastAPI university project](https://github.com/imenabidimen/Abid_Araari_Trabelsi_lglsi2c)
 
 
-TaskForge is a small task API built with NestJS, Prisma and PostgreSQL. WorkBoard (Vue) and ClientHub (React) use it for account access and task persistence.
-
 ## Stack
 
 - NestJS and TypeScript
