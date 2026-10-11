@@ -1,5 +1,15 @@
 # TaskForge API
 
+![CI](https://github.com/imenabidimen/taskforge-api/actions/workflows/ci.yml/badge.svg)
+
+TaskForge is the backend project in my full-stack portfolio. It exposes authenticated task endpoints consumed by two separate frontends: [WorkBoard (Vue)](https://github.com/imenabidimen/workboard-vue) and [ClientHub (React)](https://github.com/imenabidimen/clienthub-react). This makes it possible to compare two frontend implementations against one API contract.
+
+**Portfolio projects**
+- [WorkBoard — Vue 3 + TypeScript](https://github.com/imenabidimen/workboard-vue)
+- [ClientHub — React + TypeScript](https://github.com/imenabidimen/clienthub-react)
+- [Foody — earlier Angular/FastAPI university project](https://github.com/imenabidimen/Abid_Araari_Trabelsi_lglsi2c)
+
+
 TaskForge is a small task API built with NestJS, Prisma and PostgreSQL. WorkBoard (Vue) and ClientHub (React) use it for account access and task persistence.
 
 ## Stack
