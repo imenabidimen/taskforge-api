@@ -20,7 +20,7 @@ describe('ProductionOrdersService', () => {
     const order = overrides.current === undefined ? { ...currentOrder } : overrides.current;
     const tx = {
       productionOrder: {
-        create: jest.fn(({ data }) => Promise.resolve({ id: 'order-1', ...data })),
+        create: jest.fn(({ data }: { data: Record<string, unknown> }) => Promise.resolve({ id: 'order-1', ...data })),
         findFirst: jest.fn(() => Promise.resolve(order)),
         updateMany: jest.fn(() => Promise.resolve({ count: overrides.updateCount ?? 1 })),
         findUniqueOrThrow: jest.fn(() => Promise.resolve({
@@ -31,7 +31,7 @@ describe('ProductionOrdersService', () => {
         findMany: jest.fn(() => Promise.resolve([])),
       },
       productionOrderEvent: {
-        create: jest.fn(({ data }) => Promise.resolve({ id: 'event-1', ...data })),
+        create: jest.fn(({ data }: { data: Record<string, unknown> }) => Promise.resolve({ id: 'event-1', ...data })),
       },
     };
     const prisma = {
