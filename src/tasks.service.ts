@@ -11,10 +11,12 @@ export class TasksService {
     });
   }
 
-  findMine(ownerId: string) {
+  findMine(ownerId: string, limit = 20, offset = 0) {
     return this.prisma.task.findMany({
       where: { ownerId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      take: limit,
+      skip: offset,
     });
   }
 
