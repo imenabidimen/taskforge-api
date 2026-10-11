@@ -25,6 +25,8 @@ TaskForge is the backend project in my full-stack portfolio. It exposes authenti
 | --- | --- | --- |
 | POST | `/api/auth/register` | Create an account |
 | POST | `/api/auth/login` | Sign in |
+| GET | `/api/health/live` | Liveness probe (HTTP process responds) |
+| GET | `/api/health/ready` | Readiness probe (checks PostgreSQL connectivity) |
 | GET | `/api/tasks` | List the signed-in user's tasks |
 | POST | `/api/tasks` | Create a task |
 | POST | `/api/tasks/:id/complete` | Mark a task complete |
@@ -54,10 +56,11 @@ The default database URL in `.env.example` is for local development only. Do not
 ```text
 src/
   app.module.ts       module wiring
-  main.ts             app setup, validation, CORS and Swagger
+  main.ts             app setup, validation, CORS, shutdown hooks and Swagger
   auth.controller.ts  registration and login routes
   auth.service.ts     password verification and token creation
   auth.guard.ts       bearer-token verification
+  health.controller.ts liveness and database readiness probes
   tasks.controller.ts task routes and request validation
   tasks.service.ts    task queries and ownership checks
   prisma.module.ts    Prisma dependency registration
