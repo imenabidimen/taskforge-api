@@ -5,6 +5,8 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableShutdownHooks();
+
   const origins = (process.env.CORS_ORIGIN ?? 'http://localhost:5173,http://localhost:4173')
     .split(',')
     .map((origin) => origin.trim())
