@@ -75,7 +75,7 @@ The compound index on `Task(ownerId, completed)` supports the common per-user ta
 
 These are intentionally not described as implemented capabilities:
 
-- No readiness endpoint or dependency-aware health check yet.
+- Liveness and database readiness endpoints are implemented; they are basic probes, not a full monitoring system.
 - No structured request logging, correlation ID, metrics or distributed tracing.
 - No deployment workflow or public hosted demo documented here.
 - No explicit rate limiting or refresh-token/session revocation flow.
