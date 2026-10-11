@@ -76,7 +76,8 @@ The compound index on `Task(ownerId, completed)` supports the common per-user ta
 These are intentionally not described as implemented capabilities:
 
 - Liveness and database readiness endpoints are implemented; they are basic probes, not a full monitoring system.
-- No structured request logging, correlation ID, metrics or distributed tracing.
+- Structured HTTP request logs include a request ID, method, path, status code, and duration. Query strings are excluded from the logged path; caller-provided IDs are restricted to a safe character set.
+- No metrics or distributed tracing yet.
 - No deployment workflow or public hosted demo documented here.
 - No explicit rate limiting or refresh-token/session revocation flow.
 - No measured load-test baseline or production SLO.
