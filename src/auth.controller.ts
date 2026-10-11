@@ -1,9 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { Transform } from 'class-transformer';
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsString, MinLength, ValidateBy } from 'class-validator';
 import { AuthService } from './auth.service';
 
-class CredentialsDto {
+export class CredentialsDto {
   @Transform(({ value }) =>
     typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
@@ -12,6 +12,14 @@ class CredentialsDto {
 
   @IsString()
   @MinLength(8)
+  @ValidateBy({
+    name: 'maxBcryptPasswordBytes',
+    validator: {
+      validate: (value: unknown) =>
+        typeof value === 'string' && Buffer.byteLength(value, 'utf8') <= 72,
+      defaultMessage: () => 'Password must be at most 72 UTF-8 bytes',
+    },
+  })
   password!: string;
 }
 
