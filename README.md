@@ -2,99 +2,109 @@
 
 ![CI](https://github.com/imenabidimen/taskforge-api/actions/workflows/ci.yml/badge.svg)
 
-TaskForge is the backend project in my full-stack portfolio. It exposes authenticated task endpoints consumed by two separate frontends: [WorkBoard (Vue)](https://github.com/imenabidimen/workboard-vue) and [ClientHub (React)](https://github.com/imenabidimen/clienthub-react). This makes it possible to compare two frontend implementations against one API contract.
+TaskForge is a NestJS API for authenticated task management, with a small fictional production-order workflow used to demonstrate state validation, audit history, and concurrent-update handling.
 
-**Portfolio projects**
-- [WorkBoard — Vue 3 + TypeScript](https://github.com/imenabidimen/workboard-vue)
-- [ClientHub — React + TypeScript](https://github.com/imenabidimen/clienthub-react)
-- [Foody — earlier Angular/FastAPI university project](https://github.com/imenabidimen/Abid_Araari_Trabelsi_lglsi2c)
+It is also the shared backend for two frontend implementations:
+- [WorkBoard](https://github.com/imenabidimen/workboard-vue) — Vue 3 + TypeScript task workflow.
+- [ClientHub](https://github.com/imenabidimen/clienthub-react) — React + TypeScript deliverables-oriented view.
 
+[Foody](https://github.com/imenabidimen/Abid_Araari_Trabelsi_lglsi2c) is an earlier university group project.
 
 ## Stack
 
 - NestJS and TypeScript
-- PostgreSQL with Prisma
-- JWT bearer authentication and bcrypt password hashing (passwords are validated against bcrypt’s 72-byte UTF-8 input limit)
-- class-validator / class-transformer request validation
+- PostgreSQL with Prisma migrations
+- JWT bearer authentication and bcrypt password hashing
+- Request validation with class-validator / class-transformer
 - Swagger/OpenAPI
 - Jest and GitHub Actions
 
-## Endpoints
+## API overview
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
 | POST | `/api/auth/register` | Create an account |
-| POST | `/api/auth/login` | Sign in |
-| GET | `/api/health/live` | Liveness probe (HTTP process responds) |
-| GET | `/api/health/ready` | Readiness probe (checks PostgreSQL connectivity) |
-| GET | `/api/tasks` | List the signed-in user's tasks (optional `limit` 1–100, `offset` ≥ 0; defaults 20/0) |
+| POST | `/api/auth/login` | Sign in and receive a token |
+| GET | `/api/health/live` | Check that the process responds |
+| GET | `/api/health/ready` | Check database readiness |
+| GET | `/api/tasks` | List the signed-in user's tasks |
 | POST | `/api/tasks` | Create a task |
-| POST | `/api/tasks/:id/complete` | Mark a task complete |\n| GET | `/api/production-orders` | List the signed-in user's production orders and transition history |\n| POST | `/api/production-orders` | Create a production order |\n| PATCH | `/api/production-orders/:id/status` | Apply a permitted production-order state transition |
+| POST | `/api/tasks/:id/complete` | Complete a task |
+| GET | `/api/production-orders` | List the signed-in user's production orders and history |
+| POST | `/api/production-orders` | Create a production order |
+| PATCH | `/api/production-orders/:id/status` | Apply an allowed status transition |
 
-Task listing supports bounded offset pagination (maximum page size 100) with deterministic ordering. Task ownership is enforced by the API. The owner ID comes from the verified JWT, not from a request-body field. A task belonging to another account is not returned or updated through these endpoints.\n\nThe manufacturing case study is a fictional domain slice: production orders move through `CREATED → RELEASED → RUNNING → COMPLETED`, with cancellation allowed before work starts. The API rejects invalid transitions, records actor/time/reason history, scopes orders to their creator, and uses a version check to reject stale concurrent updates. It is an illustrative portfolio domain, not a representation of any employer's proprietary system.
+Task listing uses bounded offset pagination: `limit` is 1–100 (default 20), and `offset` is non-negative (default 0). Task and production-order access is scoped to the authenticated account; the API does not trust an owner ID supplied by the client.
+
+## Production-order case study
+
+The production-order workflow is a fictional portfolio example, not a representation of an employer's proprietary system.
+
+```text
+CREATED -> RELEASED -> RUNNING -> COMPLETED
+    |          |          |
+    +----------+----------+-> CANCELLED (only before RUNNING)
+```
+
+The API rejects skipped or terminal-state transitions, records the actor, timestamp and optional reason for successful transitions, and uses a version check to reject stale concurrent updates. State changes and their audit events are written in the same database transaction.
+
+See [the workflow notes](docs/production-order-workflow.md) and [ADR 0002](docs/adr/0002-production-order-state-transitions.md) for the constraints and trade-offs.
 
 ## Run locally
 
-Requirements: Node.js 22+, Docker and npm.
+Requirements: Node.js 22+, Docker, and npm.
 
 ```bash
 docker compose up -d postgres
 cp .env.example .env
-# Replace JWT_SECRET with a long, random value before using the API.
+# Set JWT_SECRET to a random value of at least 32 UTF-8 bytes.
 npm ci
 npm run prisma:generate
 npx prisma migrate deploy
 npm run start:dev
 ```
 
-Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)
+Swagger UI: http://localhost:3000/docs
 
-The default database URL in `.env.example` is for local development only. Do not reuse its credentials or a development JWT secret in a deployed environment.
+The example database credentials are for local development only. Do not reuse them or a development JWT secret in a deployed environment.
 
 ## Source layout
 
 ```text
 src/
-  app.module.ts       module wiring
-  main.ts             app setup, validation, CORS, shutdown hooks and Swagger
-  auth.controller.ts  registration and login routes
-  auth.service.ts     password verification and token creation
-  auth.guard.ts       bearer-token verification
-  health.controller.ts liveness and database readiness probes
-  request-logging.middleware.ts request IDs and structured HTTP logs
-  tasks.controller.ts task routes and request validation
-  tasks.service.ts    task queries and ownership checks\n  production-orders.controller.ts authenticated manufacturing workflow routes\n  production-orders.service.ts state-transition rules and audit events
-  prisma.module.ts    Prisma dependency registration
-  prisma.service.ts   database client
+  app.module.ts
+  main.ts
+  auth.controller.ts
+  auth.service.ts
+  auth.guard.ts
+  health.controller.ts
+  request-logging.middleware.ts
+  tasks.controller.ts
+  tasks.service.ts
+  production-orders.controller.ts
+  production-orders.service.ts
+  prisma.module.ts
+  prisma.service.ts
 prisma/
-  schema.prisma       User and Task models
-  migrations/         database migrations
-test/                 unit and integration tests
+  schema.prisma
+  migrations/
+test/
+  unit and database integration tests
 ```
 
-CI runs type-checking, authentication, task-ownership and request-logging tests, the Prisma migration and a production build. Authentication input tests cover email normalization and bcrypt’s byte-length limit. CI also captures the Swagger page in a browser and uploads the image as a workflow artifact.
+## Verification
+
+GitHub Actions installs dependencies with `npm ci`, generates the Prisma client, applies migrations to PostgreSQL, runs type-checking and tests, builds the application, starts the API, and captures the Swagger UI in a browser. The screenshot is uploaded as a workflow artifact.
 
 ![TaskForge Swagger API](docs/screenshots/swagger-api.png)
 
-## Design decisions
-
-- **The API owns authorization.** Task queries use the authenticated user's ID from the verified token. The client cannot choose which user's tasks it reads or changes by sending an owner ID.
-- **Invalid input is rejected at the boundary.** Request DTO validation is kept close to the controllers so bad input does not become a database concern.
-- **Database changes are versioned.** Prisma migrations run in CI against PostgreSQL, rather than relying on a developer's local schema.
-- **The scope is intentionally small.** This repository demonstrates the API, authentication and persistence fundamentals; it is not presented as a production SaaS platform with a full roles/permissions model or deployment setup.
-
-The main thing to review here is the API contract and its tests, not the number of endpoints.
-
-
 ## Engineering notes
 
-The repository includes short, explicit engineering documents:
+- [Architecture and current boundaries](docs/architecture.md)
+- [ADR 0001: modular monolith](docs/adr/0001-modular-monolith.md)
+- [ADR 0002: production-order state transitions](docs/adr/0002-production-order-state-transitions.md)
+- [Production-order workflow](docs/production-order-workflow.md)
+- [Operational runbook](docs/operations/runbook.md)
+- [Evidence-driven roadmap](docs/roadmap.md)
 
-- [Architecture and current boundaries](docs/architecture.md) — request flow, data model, implemented controls, and known gaps.
-- [ADR 0001: modular monolith](docs/adr/0001-modular-monolith.md) — why this project does not split a small domain into microservices yet.
-- [ADR 0002: production-order state transitions](docs/adr/0002-production-order-state-transitions.md) — transaction and optimistic-concurrency trade-offs.
-- [Production-order workflow](docs/production-order-workflow.md) — state diagram, invariants, and example API requests.
-- [Operational runbook](docs/operations/runbook.md) — local startup and failure triage, with current operational limitations stated honestly.
-- [Evidence-driven roadmap](docs/roadmap.md) — acceptance criteria for observability, performance testing and future hardening.
-
-These documents separate implemented behavior from planned work. There is no claim of a production deployment, measured scalability, or monitoring stack until those are implemented and verified.
+This project demonstrates a deliberately limited API rather than claiming to be a fully deployed production platform. Deployment, measured load results, and a monitoring stack are not claimed until implemented and verified.
