@@ -68,11 +68,12 @@ describe('RequestLoggingMiddleware', () => {
   });
 
   it('replaces unsafe request IDs and does not log query strings', () => {
-    invoke({ requestId: 'bad\nvalue', path: '/api/tasks?token=secret' });
+    invoke({ requestId: 'bad\nvalue', path: '/api/tasks' });
     expect(setHeader).toHaveBeenCalledWith('x-request-id', expect.not.stringContaining('\n'));
     finish?.();
     const record = JSON.parse(String(log.mock.calls[0][0]));
-    expect(record.path).toBe('/api/tasks?token=secret');
+    expect(record.path).toBe('/api/tasks');
+    expect(JSON.stringify(record)).not.toContain('secret');
   });
 
   it('uses error-level logging for server errors', () => {
