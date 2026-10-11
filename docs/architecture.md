@@ -82,6 +82,7 @@ These are intentionally not described as implemented capabilities:
 - No explicit rate limiting or refresh-token/session revocation flow.
 - No measured load-test baseline or production SLO.
 - The role field exists in the schema, but a complete role/permission policy is not a current feature.
+- Task listing uses bounded offset pagination with deterministic ordering. Very deep offsets may still become expensive; cursor pagination should be evaluated if measured workloads justify it.
 - No optimistic concurrency/version field for concurrent task edits.
 
 ## Evolution approach
