@@ -7,6 +7,7 @@ import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
 import { AuthGuard } from './auth.guard';
 import { PrismaModule } from './prisma.module';
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { PrismaModule } from './prisma.module';
       signOptions: { expiresIn: '15m' },
     }),
   ],
-  controllers: [AuthController, TasksController],
+  controllers: [AuthController, TasksController, HealthController],
   providers: [AuthService, TasksService, AuthGuard],
 })
 export class AppModule {}
