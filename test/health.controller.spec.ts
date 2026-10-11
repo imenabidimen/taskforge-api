@@ -40,12 +40,17 @@ describe('HealthController', () => {
     await expect(controller.ready()).rejects.toBeInstanceOf(ServiceUnavailableException);
     try {
       await controller.ready();
+      fail('Expected readiness to reject when PostgreSQL is unavailable');
     } catch (error) {
-      expect(error.getResponse()).toEqual({
+      expect(error).toBeInstanceOf(ServiceUnavailableException);
+      const response = error instanceof ServiceUnavailableException
+        ? error.getResponse()
+        : undefined;
+      expect(response).toEqual({
         status: 'error',
         checks: { database: 'unavailable' },
       });
-      expect(JSON.stringify(error.getResponse())).not.toContain('private connection detail');
+      expect(JSON.stringify(response)).not.toContain('private connection detail');
     }
   });
 });
