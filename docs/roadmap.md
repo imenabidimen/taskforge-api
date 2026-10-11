@@ -5,8 +5,8 @@ This roadmap prioritizes verifiable behavior over adding features for appearance
 ## 1. Operational baseline
 
 - [x] Add liveness and readiness endpoints; readiness checks database connectivity without exposing secrets.
-- [ ] Add structured request logs and a request/correlation ID.
-- [ ] Add graceful shutdown and document deployment environment variables.
+- [x] Add structured request logs and a request/correlation ID.
+- [x] Add graceful shutdown and document deployment environment variables.
 - [ ] Add security headers, explicit production CORS configuration, and rate limiting for authentication endpoints.
 - [ ] Define a deployment target and deploy a demo with no real personal data.
 
