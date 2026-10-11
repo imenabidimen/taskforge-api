@@ -1,6 +1,5 @@
 import { Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
-import type { NextFunction, Request, Response } from 'express';
 
 const REQUEST_ID_PATTERN = /^[a-zA-Z0-9._:-]{1,100}$/;
 
@@ -8,7 +7,7 @@ const REQUEST_ID_PATTERN = /^[a-zA-Z0-9._:-]{1,100}$/;
 export class RequestLoggingMiddleware implements NestMiddleware {
   private readonly logger = new Logger('HTTP');
 
-  use(request: Request, response: Response, next: NextFunction): void {
+  use(request: { header(name: string): string | undefined; method: string; path: string }, response: { setHeader(name: string, value: string): unknown; statusCode: number; on(event: 'finish', listener: () => void): unknown }, next: (error?: unknown) => void): void {
     const suppliedId = request.header('x-request-id');
     const requestId =
       suppliedId && REQUEST_ID_PATTERN.test(suppliedId)
