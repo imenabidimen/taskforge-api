@@ -39,7 +39,7 @@ Requirements: Node.js 22+, Docker and npm.
 docker compose up -d postgres
 cp .env.example .env
 # Replace JWT_SECRET with a long, random value before using the API.
-npm install
+npm ci
 npm run prisma:generate
 npx prisma migrate deploy
 npm run start:dev
