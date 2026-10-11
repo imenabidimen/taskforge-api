@@ -29,9 +29,9 @@ TaskForge is the backend project in my full-stack portfolio. It exposes authenti
 | GET | `/api/health/ready` | Readiness probe (checks PostgreSQL connectivity) |
 | GET | `/api/tasks` | List the signed-in user's tasks (optional `limit` 1–100, `offset` ≥ 0; defaults 20/0) |
 | POST | `/api/tasks` | Create a task |
-| POST | `/api/tasks/:id/complete` | Mark a task complete |
+| POST | `/api/tasks/:id/complete` | Mark a task complete |\n| GET | `/api/production-orders` | List the signed-in user's production orders and transition history |\n| POST | `/api/production-orders` | Create a production order |\n| PATCH | `/api/production-orders/:id/status` | Apply a permitted production-order state transition |
 
-Task listing supports bounded offset pagination (maximum page size 100) with deterministic ordering. Task ownership is enforced by the API. The owner ID comes from the verified JWT, not from a request-body field. A task belonging to another account is not returned or updated through these endpoints.
+Task listing supports bounded offset pagination (maximum page size 100) with deterministic ordering. Task ownership is enforced by the API. The owner ID comes from the verified JWT, not from a request-body field. A task belonging to another account is not returned or updated through these endpoints.\n\nThe manufacturing case study is a fictional domain slice: production orders move through `CREATED → RELEASED → RUNNING → COMPLETED`, with cancellation allowed before work starts. The API rejects invalid transitions, records actor/time/reason history, scopes orders to their creator, and uses a version check to reject stale concurrent updates. It is an illustrative portfolio domain, not a representation of any employer's proprietary system.
 
 ## Run locally
 
@@ -63,7 +63,7 @@ src/
   health.controller.ts liveness and database readiness probes
   request-logging.middleware.ts request IDs and structured HTTP logs
   tasks.controller.ts task routes and request validation
-  tasks.service.ts    task queries and ownership checks
+  tasks.service.ts    task queries and ownership checks\n  production-orders.controller.ts authenticated manufacturing workflow routes\n  production-orders.service.ts state-transition rules and audit events
   prisma.module.ts    Prisma dependency registration
   prisma.service.ts   database client
 prisma/
@@ -93,6 +93,6 @@ The repository includes short, explicit engineering documents:
 - [Architecture and current boundaries](docs/architecture.md) — request flow, data model, implemented controls, and known gaps.
 - [ADR 0001: modular monolith](docs/adr/0001-modular-monolith.md) — why this project does not split a small domain into microservices yet.
 - [Operational runbook](docs/operations/runbook.md) — local startup and failure triage, with current operational limitations stated honestly.
-- [Evidence-driven roadmap](docs/roadmap.md) — acceptance criteria for health checks, observability, performance testing, and a manufacturing-domain case study.
+- [Evidence-driven roadmap](docs/roadmap.md) — acceptance criteria for observability, performance testing and future hardening.
 
 These documents separate implemented behavior from planned work. There is no claim of a production deployment, measured scalability, or monitoring stack until those are implemented and verified.
