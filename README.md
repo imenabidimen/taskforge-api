@@ -80,3 +80,15 @@ CI runs type-checking, authentication and task-ownership tests, the Prisma migra
 - **The scope is intentionally small.** This repository demonstrates the API, authentication and persistence fundamentals; it is not presented as a production SaaS platform with a full roles/permissions model or deployment setup.
 
 The main thing to review here is the API contract and its tests, not the number of endpoints.
+
+
+## Engineering notes
+
+The repository includes short, explicit engineering documents:
+
+- [Architecture and current boundaries](docs/architecture.md) — request flow, data model, implemented controls, and known gaps.
+- [ADR 0001: modular monolith](docs/adr/0001-modular-monolith.md) — why this project does not split a small domain into microservices yet.
+- [Operational runbook](docs/operations/runbook.md) — local startup and failure triage, with current operational limitations stated honestly.
+- [Evidence-driven roadmap](docs/roadmap.md) — acceptance criteria for health checks, observability, performance testing, and a manufacturing-domain case study.
+
+These documents separate implemented behavior from planned work. There is no claim of a production deployment, measured scalability, or monitoring stack until those are implemented and verified.
