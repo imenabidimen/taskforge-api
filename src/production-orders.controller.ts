@@ -21,10 +21,11 @@ import {
   MinLength,
 } from 'class-validator';
 import { ProductionOrderStatus } from '@prisma/client';
+import { ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from './auth.guard';
 import { ProductionOrdersService } from './production-orders.service';
 
-class CreateProductionOrderDto {
+class CreateProductionOrderDto {\n  @ApiProperty({ example: 'PO-2026-001', description: 'Unique production order identifier.' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim().toUpperCase() : value))
   @IsString()
   @MinLength(2)
@@ -37,26 +38,26 @@ class CreateProductionOrderDto {
   @MinLength(1)
   @MaxLength(40)
   @Matches(/^[A-Z0-9][A-Z0-9._-]*$/)
-  materialCode!: string;
+  @ApiProperty({ example: 'MAT-42', description: 'Material identifier in this fictional domain.' })\n  materialCode!: string;
 
   @Type(() => Number)
   @IsInt()
   @Min(1)
   @Max(1000000)
-  plannedQuantity!: number;
+  @ApiProperty({ example: 250, minimum: 1, maximum: 1000000 })\n  plannedQuantity!: number;
 }
 
-class TransitionProductionOrderDto {
+class TransitionProductionOrderDto {\n  @ApiProperty({ enum: ProductionOrderStatus, example: ProductionOrderStatus.RELEASED })
   @IsEnum(ProductionOrderStatus)
   status!: ProductionOrderStatus;
 
   @IsOptional()
   @IsString()
   @MaxLength(250)
-  reason?: string;
+  @ApiPropertyOptional({ example: 'Material and schedule verified', maxLength: 250 })\n  reason?: string;
 }
 
-@Controller('production-orders')
+@ApiTags('production-orders')\n@Controller('production-orders')
 @UseGuards(AuthGuard)
 export class ProductionOrdersController {
   constructor(private readonly productionOrders: ProductionOrdersService) {}
