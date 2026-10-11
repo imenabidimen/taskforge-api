@@ -34,12 +34,12 @@ This roadmap prioritizes verifiable behavior over adding features for appearance
 
 Build a separate, clearly labeled fictional domain slice inspired by common manufacturing execution concepts, not FORVIA's proprietary system.
 
-- [ ] Model production orders, equipment, material definitions, and explicit state transitions.
-- [ ] Define invariants and rejected transitions.
+- [x] Model production orders and explicit state transitions (initial domain slice).\n- [ ] Extend the fictional domain with equipment/material definitions only when supported by a concrete use case.
+- [x] Define invariants and rejected transitions.
 - [ ] Make declaration/retry semantics idempotent.
-- [ ] Record actor, timestamp, result, and reason for important transitions.
+- [x] Record actor, timestamp, and optional reason for accepted transitions.
 - [ ] Simulate a downstream integration that can fail and be retried.
-- [ ] Add concurrency tests for resource reservation.
+- [x] Test stale concurrent order transitions are rejected.\n- [ ] Add concurrency tests for resource reservation.
 
 **Acceptance evidence:** domain model, sequence/state diagrams, tests for business invariants, failure walkthrough, and a statement distinguishing simulation from professional work.
 
