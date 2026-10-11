@@ -9,6 +9,8 @@ import { AuthGuard } from './auth.guard';
 import { PrismaModule } from './prisma.module';
 import { HealthController } from './health.controller';
 import { RequestLoggingMiddleware } from './request-logging.middleware';
+import { ProductionOrdersController } from './production-orders.controller';
+import { ProductionOrdersService } from './production-orders.service';
 import { MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
 
 @Module({
@@ -20,8 +22,8 @@ import { MiddlewareConsumer, NestModule, RequestMethod } from '@nestjs/common';
       signOptions: { expiresIn: '15m' },
     }),
   ],
-  controllers: [AuthController, TasksController, HealthController],
-  providers: [AuthService, TasksService, AuthGuard, RequestLoggingMiddleware],
+  controllers: [AuthController, TasksController, HealthController, ProductionOrdersController],
+  providers: [AuthService, TasksService, ProductionOrdersService, AuthGuard, RequestLoggingMiddleware],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
