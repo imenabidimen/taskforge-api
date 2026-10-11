@@ -27,11 +27,11 @@ TaskForge is the backend project in my full-stack portfolio. It exposes authenti
 | POST | `/api/auth/login` | Sign in |
 | GET | `/api/health/live` | Liveness probe (HTTP process responds) |
 | GET | `/api/health/ready` | Readiness probe (checks PostgreSQL connectivity) |
-| GET | `/api/tasks` | List the signed-in user's tasks |
+| GET | `/api/tasks` | List the signed-in user's tasks (optional `limit` 1–100, `offset` ≥ 0; defaults 20/0) |
 | POST | `/api/tasks` | Create a task |
 | POST | `/api/tasks/:id/complete` | Mark a task complete |
 
-Task ownership is enforced by the API. The owner ID comes from the verified JWT, not from a request-body field. A task belonging to another account is not returned or updated through these endpoints.
+Task listing supports bounded offset pagination (maximum page size 100) with deterministic ordering. Task ownership is enforced by the API. The owner ID comes from the verified JWT, not from a request-body field. A task belonging to another account is not returned or updated through these endpoints.
 
 ## Run locally
 
