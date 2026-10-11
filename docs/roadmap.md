@@ -14,7 +14,7 @@ This roadmap prioritizes verifiable behavior over adding features for appearance
 
 ## 2. Data correctness
 
-- [ ] Add pagination and deterministic ordering to task listing.
+- [x] Add bounded offset pagination and deterministic ordering to task listing.
 - [ ] Add tests for authorization across users at the HTTP/API boundary.
 - [ ] Decide whether concurrent updates need optimistic concurrency control; add a version field only if the behavior is required.
 - [ ] Document migration forward-fix and recovery expectations.
