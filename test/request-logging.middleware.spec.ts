@@ -1,5 +1,4 @@
 import { Logger } from '@nestjs/common';
-import type { NextFunction, Request, Response } from 'express';
 import { RequestLoggingMiddleware } from '../src/request-logging.middleware';
 
 describe('RequestLoggingMiddleware', () => {
@@ -34,14 +33,14 @@ describe('RequestLoggingMiddleware', () => {
       method: 'GET',
       path: options.path ?? '/api/tasks',
       header: jest.fn(() => options.requestId),
-    } as unknown as Request;
+    } as any;
     const response = {
       setHeader,
       on,
       statusCode: options.statusCode ?? 200,
-    } as unknown as Response;
+    } as any;
 
-    middleware.use(request, response, next as unknown as NextFunction);
+    middleware.use(request, response, next);
     return { request, response };
   }
 
