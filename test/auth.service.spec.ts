@@ -1,4 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
+import { Prisma } from '@prisma/client';
 import { UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../src/auth.service';
 
@@ -42,5 +43,24 @@ describe('AuthService', () => {
     const s = service();
     await s.register('dev@example.com', 'password123');
     await expect(s.register('dev@example.com', 'password123')).rejects.toThrow('Email already registered');
+  });
+
+  it('returns a conflict if two registrations race on the unique email index', async () => {
+    const prisma = {
+      user: {
+        findUnique: jest.fn().mockResolvedValue(null),
+        create: jest.fn().mockRejectedValue(
+          new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+            code: 'P2002',
+            clientVersion: 'test',
+          }),
+        ),
+      },
+    };
+    const s = new AuthService(new JwtService({ secret: 'test' }), prisma as any);
+
+    await expect(s.register('dev@example.com', 'password123')).rejects.toThrow(
+      'Email already registered',
+    );
   });
 });
