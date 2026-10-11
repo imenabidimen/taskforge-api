@@ -2,13 +2,13 @@
 
 ![CI](https://github.com/imenabidimen/taskforge-api/actions/workflows/ci.yml/badge.svg)
 
-TaskForge is a NestJS API for authenticated task management, with a small fictional production-order workflow used to demonstrate state validation, audit history, and concurrent-update handling.
+TaskForge is a NestJS API for user-owned tasks and a small production-order workflow. The task endpoints support the two frontends in this portfolio; the production-order endpoints are a separate example of enforcing a business process in the backend instead of trusting the UI.
 
-It is also the shared backend for two frontend implementations:
-- [WorkBoard](https://github.com/imenabidimen/workboard-vue) — Vue 3 + TypeScript task workflow.
-- [ClientHub](https://github.com/imenabidimen/clienthub-react) — React + TypeScript deliverables-oriented view.
+It also powers two frontends:
+- [WorkBoard](https://github.com/imenabidimen/workboard-vue) — a Vue 3 task list with a short create-and-complete flow.
+- [ClientHub](https://github.com/imenabidimen/clienthub-react) — a React deliverables view with title search, status filters and a completion summary.
 
-[Foody](https://github.com/imenabidimen/Abid_Araari_Trabelsi_lglsi2c) is an earlier university group project.
+[Foody](https://github.com/imenabidimen/Abid_Araari_Trabelsi_lglsi2c) is an earlier university group project built with a different stack.
 
 ## Stack
 
@@ -38,7 +38,7 @@ Task listing uses bounded offset pagination: `limit` is 1–100 (default 20), an
 
 ## Production-order case study
 
-The production-order workflow is a fictional portfolio example, not a representation of an employer's proprietary system.
+This is a fictional manufacturing example for the portfolio, not a copy of an employer's proprietary system.
 
 ```text
 CREATED -> RELEASED -> RUNNING -> COMPLETED
@@ -46,9 +46,9 @@ CREATED -> RELEASED -> RUNNING -> COMPLETED
     +----------+----------+-> CANCELLED (only before RUNNING)
 ```
 
-The API rejects skipped or terminal-state transitions, records the actor, timestamp and optional reason for successful transitions, and uses a version check to reject stale concurrent updates. State changes and their audit events are written in the same database transaction.
+The status endpoint rejects skipped transitions and attempts to change a terminal order. A successful transition stores the actor, timestamp and optional reason alongside the state change. Both are written in one database transaction so the history cannot claim a transition that failed to save. Each order also has a version; if two requests try to update the same version, the stale request is rejected rather than silently overwriting the first update.
 
-See [the workflow notes](docs/production-order-workflow.md) and [ADR 0002](docs/adr/0002-production-order-state-transitions.md) for the constraints and trade-offs.
+See [the workflow notes](docs/production-order-workflow.md) and [ADR 0002](docs/adr/0002-production-order-state-transitions.md) for the rules and trade-offs.
 
 ## Run locally
 
@@ -94,17 +94,17 @@ test/
 
 ## Verification
 
-GitHub Actions installs dependencies with `npm ci`, generates the Prisma client, applies migrations to PostgreSQL, runs type-checking and tests, builds the application, starts the API, and captures the Swagger UI in a browser. The screenshot is uploaded as a workflow artifact.
+The GitHub Actions workflow installs from the lockfile, starts PostgreSQL, generates the Prisma client, applies migrations, runs type-checking and tests, builds the API, and opens Swagger in a browser. It saves the browser capture as a workflow artifact.
 
 ![TaskForge Swagger API](docs/screenshots/swagger-api.png)
 
-## Engineering notes
+## Design notes
 
 - [Architecture and current boundaries](docs/architecture.md)
 - [ADR 0001: modular monolith](docs/adr/0001-modular-monolith.md)
 - [ADR 0002: production-order state transitions](docs/adr/0002-production-order-state-transitions.md)
 - [Production-order workflow](docs/production-order-workflow.md)
 - [Operational runbook](docs/operations/runbook.md)
-- [Evidence-driven roadmap](docs/roadmap.md)
+- [Roadmap](docs/roadmap.md)
 
-This project demonstrates a deliberately limited API rather than claiming to be a fully deployed production platform. Deployment, measured load results, and a monitoring stack are not claimed until implemented and verified.
+This repository is an API and a testable workflow example, not a deployed production service. It does not claim a live deployment, measured load results, or a production monitoring stack.
